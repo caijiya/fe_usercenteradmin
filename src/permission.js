@@ -17,10 +17,8 @@ router.beforeEach(async(to, from, next) => {
   document.title = getPageTitle(to.meta.title)
   // determine whether the user has logged in
   const hasToken = getToken()
-  console.log(hasToken)
   if (hasToken) {
     if (to.path === '/login') {
-      console.log('if is logged in, redirect to the home page')
       // if is logged in, redirect to the home page
       next({ path: '/' })
       NProgress.done()
@@ -34,7 +32,6 @@ router.beforeEach(async(to, from, next) => {
           const userInfo = await store.dispatch('user/getInfo')
           const { menus } = userInfo
           store.dispatch('permission/generateRoutes', menus).then(actualRoutes => {
-            console.log(actualRoutes)
             router.addRoutes(actualRoutes) // 动态添加可访问路由表
             next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
           }).catch(err => {

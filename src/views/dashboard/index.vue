@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-text">name: {{ username }}</div>
-    <div class="dashboard-text">roles: <span v-for="role in roles" :key="role">{{ role.roleName }}</span></div>
+    <div class="dashboard-text">roles: <span v-for="role in roles" :key="role.id">{{ role.roleName }}</span></div>
   </div>
 </template>
 
