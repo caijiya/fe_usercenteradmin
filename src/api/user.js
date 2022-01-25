@@ -29,3 +29,10 @@ export function pageList(data) {
     data
   })
 }
+
+export function resetPassword(userId) {
+  return request({
+    url: 'user/resetPassword/' + userId,
+    method: 'post'
+  })
+}

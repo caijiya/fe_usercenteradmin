@@ -5,12 +5,12 @@
         <el-input v-model="deptName" placeholder="请输入部门名称" prefix-icon="el-icon-search" />
       </div>
       <el-tree
+        ref="tree"
         class="filter-tree"
         :data="deptTreeData"
         :props="defaultProps"
         default-expand-all
         :filter-node-method="filterNode"
-        ref="tree"
         @node-click="handleNodeClick"
       />
     </el-aside>
@@ -22,7 +22,7 @@
       </el-form>
       <div>
         <el-button icon="el-icon-search" @click="searchUser">搜索</el-button>
-        <el-button icon="el-icon-refresh">重置</el-button>
+        <el-button icon="el-icon-refresh" @click="resetSearchCondition">重置</el-button>
       </div>
       <el-table
         :data="users"
@@ -91,16 +91,39 @@
               @click="handleDelete(scope.$index, scope.row)"
             >删除
             </el-button>
+            <el-popover
+              placement="bottom-end"
+              width="20"
+              trigger="hover"
+            >
+              <div style="text-align: center">
+                <el-button type="danger" @click="resetPassword(scope.row.id)">重置密码</el-button>
+                <br>
+                <el-button style="margin-top: 8px" type="primary">分配角色</el-button>
+              </div>
+              <el-button slot="reference" style="margin-left: 8px;height:28px">更多操作</el-button>
+            </el-popover>
           </template>
         </el-table-column>
       </el-table>
+      <div style="margin-top: 16px; display: flex;flex-direction: row-reverse">
+        <el-pagination
+          :current-page="userSearch.pageDTO.current"
+          :page-sizes="[5,10, 30, 50]"
+          :page-size="userSearch.pageDTO.size"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
     </el-main>
   </el-container>
 </template>
 
 <script>
 import { deptTree } from '@/api/dept'
-import { pageList } from '@/api/user'
+import { pageList, resetPassword } from '@/api/user'
 
 export default {
   name: 'UserManage',
@@ -116,7 +139,8 @@ export default {
           size: 10
         }
       },
-      users: [],
+      total: null,
+      users: {},
       defaultProps: {
         children: 'children',
         label: 'deptName'
@@ -149,10 +173,48 @@ export default {
       })
     },
     searchUser() {
+      console.log(this.userSearch)
       pageList(this.userSearch).then(response => {
         this.users = response.data.records
+        this.total = response.data.total
       }, err => {
         console.log(err)
+      })
+    },
+    resetSearchCondition() {
+      this.userSearch = {
+        username: '',
+        pageDTO: {
+          current: 1,
+          size: 10
+        }
+      }
+    },
+    handleSizeChange(val) {
+      this.userSearch.pageDTO.size = val
+      this.searchUser()
+    },
+    handleCurrentChange(val) {
+      this.userSearch.pageDTO.current = val
+      this.searchUser()
+    },
+    resetPassword(userId) {
+      this.$confirm('此操作将重置密码, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        resetPassword(userId).then(() => {
+          this.$message({
+            type: 'success',
+            message: '重置成功!'
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '操作已取消'
+        })
       })
     }
   }
