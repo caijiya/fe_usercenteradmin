@@ -36,3 +36,10 @@ export function resetPassword(userId) {
     method: 'post'
   })
 }
+
+export function removeUser(userId) {
+  return request({
+    url: 'user/' + userId,
+    method: 'delete'
+  })
+}

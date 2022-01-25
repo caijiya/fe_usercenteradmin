@@ -82,13 +82,13 @@
           <template slot-scope="scope">
             <el-button
               size="mini"
-              @click="handleEdit(scope.$index, scope.row)"
+              @click="handleEdit(scope.row)"
             >编辑
             </el-button>
             <el-button
               size="mini"
               type="danger"
-              @click="handleDelete(scope.$index, scope.row)"
+              @click="removeUser(scope.row.id)"
             >删除
             </el-button>
             <el-popover
@@ -123,7 +123,7 @@
 
 <script>
 import { deptTree } from '@/api/dept'
-import { pageList, resetPassword } from '@/api/user'
+import { pageList, resetPassword, removeUser } from '@/api/user'
 
 export default {
   name: 'UserManage',
@@ -140,7 +140,7 @@ export default {
         }
       },
       total: null,
-      users: {},
+      users: [],
       defaultProps: {
         children: 'children',
         label: 'deptName'
@@ -173,7 +173,6 @@ export default {
       })
     },
     searchUser() {
-      console.log(this.userSearch)
       pageList(this.userSearch).then(response => {
         this.users = response.data.records
         this.total = response.data.total
@@ -197,6 +196,25 @@ export default {
     handleCurrentChange(val) {
       this.userSearch.pageDTO.current = val
       this.searchUser()
+    },
+    removeUser(userId) {
+      this.$confirm('此操作将删除该, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        removeUser(userId).then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '操作已取消'
+        })
+      })
     },
     resetPassword(userId) {
       this.$confirm('此操作将重置密码, 是否继续?', '提示', {
