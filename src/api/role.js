@@ -15,3 +15,20 @@ export function update(data) {
     data
   })
 }
+
+export function detail(roleId) {
+  return request({
+    url: 'role/' + roleId,
+    method: 'get'
+  })
+}
+
+export function add(data) {
+  return request(
+    {
+      url: 'role/add',
+      method: 'post',
+      data
+    }
+  )
+}

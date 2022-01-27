@@ -80,7 +80,7 @@
         width="160"
       >
         <template slot-scope="scope">
-          <i class="el-icon-edit" @click="updateRoleDialogVisible(scope.row.id)">编辑</i>
+          <i class="el-icon-edit" style="cursor: pointer" @click="updateRoleDialogVisible(scope.row.id)">编辑</i>
         </template>
       </el-table-column>
     </el-table>
@@ -126,6 +126,7 @@ export default {
   methods: {
     success() {
       this.cancel()
+      this.roleSearch()
     },
     roleSearch() {
       this.listLoading = true

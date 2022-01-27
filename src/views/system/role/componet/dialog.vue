@@ -2,19 +2,16 @@
   <div>
     <el-dialog
       ref="dialog"
-      title="收货地址"
+      title="新增/编辑"
       v-bind="$attrs"
       v-on="$listeners"
     >
-      <el-form :model="form">
-        <el-form-item label="活动名称" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off" />
+      <el-form>
+        <el-form-item label="角色名称" :label-width="formLabelWidth">
+          <el-input v-model="roleInfo.roleName" autocomplete="off" />
         </el-form-item>
-        <el-form-item label="活动区域" :label-width="formLabelWidth">
-          <el-select v-model="form.region" placeholder="请选择活动区域">
-            <el-option label="区域一" value="shanghai" />
-            <el-option label="区域二" value="beijing" />
-          </el-select>
+        <el-form-item label="角色编码" :label-width="formLabelWidth">
+          <el-input v-model="roleInfo.roleCode" autocomplete="off" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -26,11 +23,14 @@
 </template>
 
 <script>
+import { detail, update } from '@/api/role'
+
 const EVENT_NAME = {
   success: 'success'
 }
 export default {
   name: 'AddUpdateDetailDialog',
+  inheritAttrs: false,
   props: {
     roleId: {
       type: Number,
@@ -40,21 +40,18 @@ export default {
   data() {
     return {
       title: '',
-      form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
+      roleInfo: {
+        roleName: '',
+        roleCode: ''
       },
       formLabelWidth: '120px'
     }
   },
   mounted() {
     console.log(this.roleId)
+    detail(this.roleId).then(res => {
+      this.roleInfo = res.data
+    })
   },
   methods: {
     cancel() {
@@ -62,7 +59,9 @@ export default {
     },
     confirm() {
       // 这里提交数据
-      this.$emit(EVENT_NAME.success)
+      update({ id: this.roleId, roleName: this.roleInfo.roleName, roleCode: this.roleInfo.roleCode }).then(() => {
+        this.$emit(EVENT_NAME.success)
+      })
     }
   }
 }
